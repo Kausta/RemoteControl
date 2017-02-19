@@ -4,7 +4,7 @@
 * Description:
 */
 
-#pragma onc
+#pragma once
 
 #include <map>
 
