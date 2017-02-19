@@ -12,27 +12,49 @@
 
 int main(int argc, char* argv[])
 {
-	program prog(argc, argv);
-	return prog.run();
+	program::instance().init_args(argc, argv);
+	return program::instance().run();
 }
 
-program::program(int argc, char* argv[])
-	: arguments(argv, argv + argc)
-{ }
+program& program::instance()
+{
+	static program instance_;
+	return instance_;
+}
+
+program::program()
+{
+}
+
+void program::init_args(int argc, char* argv[])
+{
+	arguments = std::vector<std::string>{ argv, argv + argc };
+}
 
 int program::run()
 {
-	command_manager manager(arguments[0]);
+	command_manager_ = std::make_unique<::command_manager>(arguments[0]);
 	try
 	{
-		manager.run(arguments);
+		if(arguments.size() < 2)
+		{
+			throw std::runtime_error("Mode not specified.");
+		}
+		auto mode = arguments[1];
+		std::vector<std::string> mode_arguments{ arguments.begin() + 2, arguments.end() };
+		command_manager_->run_from_mode(mode, mode_arguments);
 		
 		return EXIT_SUCCESS;
 	}
 	catch(const std::runtime_error& error)
 	{
-		std::cout << manager.help_message();
+		std::cout << command_manager_->help_message();
 		std::cout << "Error: " << error.what() << "\n";
 		return EXIT_FAILURE;
 	}
+}
+
+command_manager& program::command_manager() const
+{
+	return *command_manager_;
 }
