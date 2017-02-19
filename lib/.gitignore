@@ -2,3 +2,4 @@
 # So don't ignore lib files from it
 
 !*.lib
+!*
