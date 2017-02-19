@@ -12,7 +12,7 @@
 
 class command_manager
 {
-private:
+public:
 	struct command_detail
 	{
 		command_type type;
@@ -29,9 +29,10 @@ private:
 		explicit section(const std::string& name);
 	};
 public:
+	command_manager();
 	explicit command_manager(const std::string& program_name);
 
-	void run(const std::vector<std::string>& command_line_args);
+	void run_from_mode(const std::string& mode, const std::vector<std::string>& args);
 
 	const std::string& help_message() const;
 private:

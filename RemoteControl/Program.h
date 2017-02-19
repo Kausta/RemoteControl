@@ -5,17 +5,26 @@
 */
 
 #pragma once
-#include <string>
+
+#include <memory>
 #include <vector>
+#include "CommandManager.h"
 
 class program
 {
+public:
+	static program& instance();
 private:
 	std::vector<std::string> arguments;
+	std::unique_ptr<command_manager> command_manager_;
+
+	program();
 public:
-	program(int argc, char* argv[]);
+	void init_args(int argc, char *argv[]);
 	
 	int run();
 
 	size_t argument_count() const { return arguments.size(); }
+
+	command_manager& command_manager() const;
 };

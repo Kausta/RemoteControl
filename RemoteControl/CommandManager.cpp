@@ -10,7 +10,7 @@
 
 void command_manager::init_modes_()
 {
-	mode_sections_.reserve(2);
+	mode_sections_.reserve(3);
 
 	section movement("Movement");
 	movement.commands.emplace_back(command_type::Move, "Moves cursor to coords", "-m", "--move");
@@ -20,6 +20,9 @@ void command_manager::init_modes_()
 	network.commands.emplace_back(command_type::Network, "Opens connection at ip, port and gets movement modes from there", "-n", "--network");
 	network.commands.emplace_back(command_type::SecureNetwork, "Network mode with ssl/tls, look to wiki for setting up authentication", "-sn", "--secure-network");
 	add_section(network);
+	section other("Other");
+	other.commands.emplace_back(command_type::MultipleInput, "Allows multiple commands from stdin, seperated with newlines.", "-mi", "--multi-input");
+	add_section(other);
 }
 
 std::string command_manager::generate_help_message_() const
@@ -28,6 +31,7 @@ std::string command_manager::generate_help_message_() const
 	ss << "Remote Control Utility\n\n";
 	ss << "Usage: " << program_name_ << " movement-mode x-pos y-pos\n";
 	ss << "Usage: " << program_name_ << " network-mode port\n";
+	ss << "Usage: " << program_name_ << " other-mode\n";
 	ss << "=====================\n";
 	for (auto const& section : mode_sections_)
 	{
@@ -56,6 +60,11 @@ command_manager::section::section(const std::string& name)
 {
 }
 
+command_manager::command_manager()
+	: command_manager("RemoteControl")
+{
+}
+
 command_manager::command_manager(const std::string& program_name)
   : program_name_(program_name)
 {
@@ -63,19 +72,8 @@ command_manager::command_manager(const std::string& program_name)
 	help_message_ = generate_help_message_();
 }
 
-void command_manager::run(const std::vector<std::string>& command_line_args)
+void command_manager::run_from_mode(const std::string& mode, const std::vector<std::string>& arguments)
 {
-	// Expected that it will be given from programmer in constructor
-	// Designed in this way to not have an extra copy, but also to make help_message available as early as possible
-	// Also helps when trying to partially run
-	//program_name_ = command_line_args[0];
-	if (command_line_args.size() < 2)
-	{
-		throw std::runtime_error("Mode not specified!");
-	}
-	auto mode = command_line_args[1];
-	std::vector<std::string> arguments{ command_line_args.begin() + 2, command_line_args.end() };
-
 	auto it = modes_.find(mode);
 	if (it == modes_.end())
 	{

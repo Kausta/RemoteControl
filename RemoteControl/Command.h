@@ -16,6 +16,7 @@ enum class command_type
 	MoveDelta,
 	Network,
 	SecureNetwork,
+	MultipleInput,
 	Unknown
 };
 
@@ -56,6 +57,14 @@ private:
 	unsigned short port_;
 public:
 	explicit network_command(const std::vector<std::string>& arguments);
+
+	void execute() const override;
+};
+
+class multiple_input_command : public command_base
+{
+public:
+	explicit multiple_input_command(const std::vector<std::string>& arguments);
 
 	void execute() const override;
 };
