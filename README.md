@@ -16,7 +16,7 @@ Designed as a layer between other remote control applications with gui or automa
      - [ ] Click
      - [ ] Drag & Drop
    - [ ] Keyboard
- - [ ] Multi Command 
+ - [x] Multi Command 
  - [ ] Network over TCP (Started)
    - [ ] SSL/TLS
 
