@@ -14,6 +14,7 @@
 
 #include "Command.h"
 #include "Program.h"
+#include "CommandReader.h"
 
 command_base::command_base(const std::vector<std::string>& arguments)
 	: arguments_(arguments)
@@ -73,6 +74,9 @@ multiple_input_command::multiple_input_command(const std::vector<std::string>& a
 void multiple_input_command::execute() const
 {
 	auto& manager = program::instance().command_manager();
+	std::vector<std::string> break_modes{ "exit", "-e", "--exit" };
+
+	command_reader reader(manager, break_modes);
 	std::cout << "Input exit\\-e\\--exit to exit.\n";
 	while (true)
 	{
@@ -80,23 +84,13 @@ void multiple_input_command::execute() const
 		{
 			std::string input;
 			std::getline(std::cin, input);
-			std::istringstream iss(input);
 			
-			std::string mode;
-			iss >> mode;
-			if(mode == "exit" || mode == "-e" || mode == "--exit")
+			auto executed = reader.execute_line(input);
+			if(!executed)
 			{
+				// User entered a break mode
 				break;
 			}
-
-			std::string arg;
-			std::vector<std::string> arguments;
-			while(iss >> arg)
-			{
-				arguments.push_back(arg);
-			}
-
-			manager.run_from_mode(mode, arguments);
 		}
 		catch (const std::runtime_error& error)
 		{

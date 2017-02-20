@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandManager.cpp" />
+    <ClCompile Include="CommandReader.cpp" />
     <ClCompile Include="MouseControl.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Server.cpp" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandManager.h" />
+    <ClInclude Include="CommandReader.h" />
     <ClInclude Include="IncludeCore.h" />
     <ClInclude Include="MouseControl.h" />
     <ClInclude Include="Program.h" />
