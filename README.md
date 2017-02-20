@@ -17,8 +17,12 @@ Designed as a layer between other remote control applications with gui or automa
      - [ ] Drag & Drop
    - [ ] Keyboard
  - [x] Multi Command 
- - [ ] Network over TCP (Started)
+ - [x] Network over TCP
    - [ ] SSL/TLS
+ - Features in:
+   - [x] Windows
+   - [ ] Linux (X Server)
+   - [ ] Mac
 
 ## License
 
