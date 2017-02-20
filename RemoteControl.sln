@@ -9,6 +9,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Debug-Server|x64 = Debug-Server|x64
+		Debug-Server|x86 = Debug-Server|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -17,6 +19,10 @@ Global
 		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug|x64.Build.0 = Debug|x64
 		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug|x86.ActiveCfg = Debug|Win32
 		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug|x86.Build.0 = Debug|Win32
+		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug-Server|x64.ActiveCfg = Debug-Server|x64
+		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug-Server|x64.Build.0 = Debug-Server|x64
+		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug-Server|x86.ActiveCfg = Debug-Server|Win32
+		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Debug-Server|x86.Build.0 = Debug-Server|Win32
 		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Release|x64.ActiveCfg = Release|x64
 		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Release|x64.Build.0 = Release|x64
 		{FE32BDCC-BE58-44CE-A07E-49132EAEDEB3}.Release|x86.ActiveCfg = Release|Win32

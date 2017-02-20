@@ -9,8 +9,10 @@
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <string>
 
 #include "ServerConnection.h"
+#include "Program.h"
 
 network::connection::pointer network::connection::create(boost::asio::io_service& io_service)
 {
@@ -44,7 +46,9 @@ void network::connection::write_async(const std::string& message)
 	                                     boost::asio::placeholders::bytes_transferred));
 }
 
-network::connection::connection(boost::asio::io_service& io_service): socket_(io_service)
+network::connection::connection(boost::asio::io_service& io_service)
+	: socket_(io_service)
+	, reader_(program::instance().command_manager())
 {
 }
 
@@ -55,11 +59,24 @@ void network::connection::handle_read(const boost::system::error_code& error, si
 		buffer_.commit(bytes_transferred);
 
 		std::istream input(&buffer_);
-		std::string message(std::istreambuf_iterator<char>(input), {});
-		boost_trim(message);
-		std::cout << "Got: '" << message + "'!\r\n";
-		message = "Executed command: " + message + "\r\n";
+		std::string message;
+		// This way, no trim error occures
+		std::getline(input, message);
+		// It won't have a new line, but trim anyways
+		boost::algorithm::trim(message);
+		std::cout << "Got: '" << message + "'!\n";
+
+		try
+		{
+			reader_.execute_line(message);
+			message = "Executed command: " + message + "\n";
+		}
+		catch(const std::runtime_error& err)
+		{
+			message = "Error while executing command (" + message +  ")= " + err.what() + "\n";
+		}
 		write_async(message);
+		
 	}
 
 	read_async();
@@ -69,7 +86,7 @@ void network::connection::handle_write(std::shared_ptr<std::string> sent_message
 {
 	if (!error)
 	{
-		std::cout << "Successfully sent '" << boost_trim_copy(*sent_message) << "' !\n";
+		std::cout << "Successfully sent '" << boost::algorithm::trim_copy(*sent_message) << "' !\n";
 	}
 }
 

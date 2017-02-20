@@ -13,6 +13,7 @@
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
+[Dd]ebug-Server/
 [Rr]elease/
 [Rr]eleases/
 [Xx]64/
@@ -62,6 +63,7 @@ artifacts/
 *.tmp
 *.tmp_proj
 *.log
+*.tlog
 *.vspscc
 *.vssscc
 .builds

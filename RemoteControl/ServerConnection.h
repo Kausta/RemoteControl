@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <boost/asio.hpp>
+#include "CommandReader.h"
 
 namespace network
 {
@@ -44,5 +45,7 @@ namespace network
 
 		boost::asio::ip::tcp::socket socket_;
 		boost::asio::streambuf buffer_;
+
+		command_reader reader_;
 	};
 }
