@@ -35,14 +35,6 @@ namespace network
 		                  const boost::system::error_code& error,
 		                  size_t /*bytes_transferred*/);
 
-		// TODO: Move to a utilities file/class/namespace
-		static constexpr char* wspace_chars = " \r\n\t";
-		// TODO: Move to a utilities file/class/namespace
-		static void boost_trim(std::string& message);
-		// TODO: Move to a utilities file/class/namespace
-		static std::string boost_trim_copy(const std::string& message);
-		// End
-
 		boost::asio::ip::tcp::socket socket_;
 		boost::asio::streambuf buffer_;
 

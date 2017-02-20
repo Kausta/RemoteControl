@@ -34,18 +34,31 @@ public:
 
 	void run_from_mode(const std::string& mode, const std::vector<std::string>& args);
 
+	bool utility_modes_enabled() const { return utility_modes_enabled_; }
+	void utility_modes_enabled(bool value) { utility_modes_enabled_ = value; }
+
 	const std::string& help_message() const;
 private:
 	void init_modes_();
 
 	void add_section(const section& section_);
+	void add_utility_section(const section& section_);
+	static void add_section_to(const section& section_, std::vector<section>& section_holder_, std::map<std::string, command_type>& mode_holder_);
 
 	std::string generate_help_message_() const;
+	static void insert_help_for_section_type(std::stringstream& ss, const std::vector<section>& section_holder_);
+
+	command_type get_mode(std::string mode_arg) const;
 
 	std::string program_name_;
 	
-	std::vector<section> mode_sections_;
+	bool utility_modes_enabled_;
+
+	std::vector<section> sections_;
+	std::vector<section> utility_sections_;
+
 	std::map<std::string, command_type> modes_;
+	std::map<std::string, command_type> utility_modes_;
 
 	std::string help_message_;
 };

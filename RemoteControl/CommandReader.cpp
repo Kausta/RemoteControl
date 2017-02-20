@@ -4,12 +4,14 @@ command_reader::command_reader(command_manager& manager)
 	: manager_(manager)
 	, break_modes_()
 {
+	init_();
 }
 
 command_reader::command_reader(command_manager& manager, const std::vector<std::string>& break_modes)
 	: manager_(manager)
 	, break_modes_(break_modes)
 {
+	init_();
 }
 
 bool command_reader::execute_line(const std::string& line) const
@@ -36,4 +38,9 @@ bool command_reader::execute_line(const std::string& line) const
 	manager_.run_from_mode(mode, arguments);
 
 	return true;
+}
+
+void command_reader::init_() const
+{
+	manager_.utility_modes_enabled(false);
 }

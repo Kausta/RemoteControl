@@ -29,6 +29,8 @@ public:
 	 */
 	bool execute_line(const std::string& line) const;
 private:
+	void init_() const;
+
 	command_manager& manager_;
 	std::vector<std::string> break_modes_;
 };
