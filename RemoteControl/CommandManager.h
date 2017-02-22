@@ -18,8 +18,10 @@ public:
 		command_type type;
 		std::string info;
 		std::string short_arg, long_arg;
+		std::optional<std::string> extra_description;
 
 		explicit command_detail(command_type type, const std::string& info, const std::string& short_arg, const std::string& long_arg);
+		explicit command_detail(command_type type, const std::string& info, const std::string& short_arg, const std::string& long_arg, const std::string& extra_description);
 	};
 	struct section
 	{
@@ -32,7 +34,7 @@ public:
 	command_manager();
 	explicit command_manager(const std::string& program_name);
 
-	void run_from_mode(const std::string& mode, const std::vector<std::string>& args);
+	void run_from_mode(const std::string& mode, const std::vector<std::string>& args) const;
 
 	bool utility_modes_enabled() const { return utility_modes_enabled_; }
 	void utility_modes_enabled(bool value) { utility_modes_enabled_ = value; }

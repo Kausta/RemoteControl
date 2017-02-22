@@ -10,6 +10,7 @@
 
 void command_manager::init_modes_()
 {
+	using namespace std::string_literals;
 	sections_.reserve(1);
 	utility_sections_.reserve(2);
 
@@ -18,7 +19,13 @@ void command_manager::init_modes_()
 	movement.commands.emplace_back(command_type::MoveDelta, "Moves cursor to current coords + coords", "-md", "--move-delta");
 	add_section(movement);
 
-	
+	section click("Click");
+	click.commands.emplace_back(command_type::MouseClick, "Mouse click", "-mc", "--mouse-click", 
+		"\tOptional arguments : \n"s +
+		"\t[button] =\n\t  -l\\--left: left click\n\t  -r\\--right: right click\n\t  -m\\--middle: middle click \n"s +
+		"\t[click_time] = click time in milliseconds"s);
+	add_section(click);
+
 	section network("Network");
 	network.commands.emplace_back(command_type::Network, "Opens connection at ip, port and gets movement modes from there", "-n", "--network");
 	network.commands.emplace_back(command_type::SecureNetwork, "Network mode with ssl/tls, look to wiki for setting up authentication", "-sn", "--secure-network");
@@ -34,6 +41,7 @@ std::string command_manager::generate_help_message_() const
 	std::stringstream ss;
 	ss << "Remote Control Utility\n\n";
 	ss << "Usage: " << program_name_ << " movement-mode x-pos y-pos\n";
+	ss << "Usage: " << program_name_ << " click-mode [button] [click_time]\n";
 	ss << "Usage: " << program_name_ << " network-mode port\n";
 	ss << "Usage: " << program_name_ << " other-mode\n";
 	ss << "=====================\n";
@@ -51,6 +59,10 @@ void command_manager::insert_help_for_section_type(std::stringstream& ss, const 
 		{
 			ss << "  " << command.short_arg << " ," << command.long_arg << ":\n";
 			ss << "\t" << command.info << "\n";
+			if(command.extra_description.has_value())
+			{
+				ss << command.extra_description.value() << "\n";
+			}
 		}
 	}
 }
@@ -59,8 +71,15 @@ command_manager::command_detail::command_detail(command_type type, const std::st
   : type(type),
 	info(info),
 	short_arg(short_arg),
-	long_arg(long_arg)
+	long_arg(long_arg),
+	extra_description()
 {
+}
+
+command_manager::command_detail::command_detail(command_type type, const std::string& info, const std::string& short_arg, const std::string& long_arg, const std::string& extra_description)
+	: command_detail(type, info, short_arg, long_arg)
+{
+	this->extra_description = extra_description;
 }
 
 command_manager::section::section(const std::string& name)
@@ -80,7 +99,7 @@ command_manager::command_manager(const std::string& program_name)
 	help_message_ = generate_help_message_();
 }
 
-void command_manager::run_from_mode(const std::string& mode, const std::vector<std::string>& arguments)
+void command_manager::run_from_mode(const std::string& mode, const std::vector<std::string>& arguments) const
 {
 	auto command_type = get_mode(mode);
 	auto command = make_command(command_type, arguments);

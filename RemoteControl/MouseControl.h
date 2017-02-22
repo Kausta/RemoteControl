@@ -28,6 +28,10 @@ namespace mouse_control
 {
 #ifdef RC_WINDOWS
 	using point_type = POINT;
+#else
+	typedef struct tag_point{
+		long x, y;
+	} point_type;
 #endif
 
 	point_type get_pos();
@@ -39,4 +43,12 @@ namespace mouse_control
 
 	void move_to(const point_type& point);
 	void move_to_relative(const point_type& point);
+
+	enum class click_type
+	{
+		Left,
+		Right,
+		Middle
+	};
+	void click(click_type click, DWORD click_time_ms = 100ul);
 };
