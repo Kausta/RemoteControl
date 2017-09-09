@@ -49,6 +49,83 @@ void move_delta_command::execute() const
 	mouse_control::move_to_relative(point_);
 }
 
+mouse_click_command::mouse_click_command(const std::vector<std::string>& arguments)
+	: command_base(arguments)
+{
+	type = mouse_control::click_type::Left;
+	click_time_ms = 100ul;
+
+	if(arguments.empty())
+	{
+		return;
+	}
+	auto type_opt = try_parse_type(arguments[0]);
+	if(type_opt.has_value())
+	{
+		type = type_opt.value();
+		if (arguments.size() >= 2)
+		{
+			auto time_opt = try_parse_time(arguments[1]);
+			if (time_opt.has_value())
+			{
+				click_time_ms = time_opt.value();
+			}
+		}
+	}
+	else
+	{
+		auto time_opt = try_parse_time(arguments[0]);
+		if(time_opt.has_value())
+		{
+			click_time_ms = time_opt.value();
+			if(arguments.size() >= 2)
+			{
+				type_opt = try_parse_type(arguments[1]);
+				if(type_opt.has_value())
+				{
+					type = type_opt.value();
+				}
+			}
+		}
+	}
+}
+
+void mouse_click_command::execute() const
+{
+	mouse_control::click(type, click_time_ms);
+}
+
+
+std::optional<mouse_control::click_type> mouse_click_command::try_parse_type(const std::string& arg)
+{
+	if(arg == "-l" || arg == "--left")
+	{
+		return mouse_control::click_type::Left;
+	}
+	if(arg == "-r" || arg == "--right")
+	{
+		return mouse_control::click_type::Right;
+	}
+	if(arg == "-m" || arg == "--middle")
+	{
+		return mouse_control::click_type::Middle;
+	}
+	return {};
+}
+
+std::optional<unsigned long> mouse_click_command::try_parse_time(const std::string& arg)
+{
+	try
+	{
+		return std::stoul(arg);
+	}
+	catch(...)
+	{
+		return {};
+	}
+}
+
+
 network_command::network_command(const std::vector<std::string>& arguments)
 	: command_base(arguments)
 {
@@ -107,6 +184,8 @@ std::unique_ptr<command_base> make_command(command_type type, const std::vector<
 		return make_command<move_command>(arguments);
 	case command_type::MoveDelta:
 		return make_command<move_delta_command>(arguments);
+	case command_type::MouseClick:
+		return make_command<mouse_click_command>(arguments);
 	case command_type::Network:
 	case command_type::SecureNetwork:
 		return make_command<network_command>(arguments);

@@ -9,11 +9,13 @@
 #include <memory>
 
 #include "MouseControl.h"
+#include <optional>
 
 enum class command_type
 {
 	Move,
 	MoveDelta,
+	MouseClick,
 	Network,
 	SecureNetwork,
 	MultipleInput,
@@ -47,6 +49,21 @@ class move_delta_command : public move_command
 {
 public:
 	explicit move_delta_command(const std::vector<std::string>& arguments);
+
+	void execute() const override;
+};
+
+class mouse_click_command : public command_base
+{
+private:
+	mouse_control::click_type type;
+
+	unsigned long click_time_ms;
+
+	static std::optional<mouse_control::click_type> try_parse_type(const std::string& arg);
+	static std::optional<unsigned long> try_parse_time(const std::string& arg);
+public:
+	explicit mouse_click_command(const std::vector<std::string>& arguments);
 
 	void execute() const override;
 };

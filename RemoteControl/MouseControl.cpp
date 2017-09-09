@@ -84,7 +84,32 @@ void mouse_control::move_to_relative(const point_type& point)
 		mouse_control::send_mouse_input(point, MOUSEEVENTF_MOVE);
 #endif
 	}
-
-
 	
+}
+
+void mouse_control::click(click_type click, DWORD click_time_ms)
+{
+	DWORD down_flag, up_flag;
+	switch (click)
+	{
+	case click_type::Left: 
+		down_flag = MOUSEEVENTF_LEFTDOWN;
+		up_flag = MOUSEEVENTF_LEFTUP;
+		break;
+	case click_type::Right: 
+		down_flag = MOUSEEVENTF_RIGHTDOWN;
+		up_flag = MOUSEEVENTF_RIGHTUP;
+		break;
+	case click_type::Middle: 
+		down_flag = MOUSEEVENTF_MIDDLEDOWN;
+		up_flag = MOUSEEVENTF_MIDDLEDOWN;
+		break;
+	default: return;
+	}
+
+#ifdef RC_WINDOWS
+	send_mouse_input({ 0,0 }, down_flag);
+	Sleep(click_time_ms);
+	send_mouse_input({ 0,0 }, up_flag);
+#endif
 }
