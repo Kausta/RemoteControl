@@ -8,145 +8,145 @@
 
 #include "CommandManager.h"
 
-void command_manager::init_modes_()
-{
-	using namespace std::string_literals;
-	sections_.reserve(1);
-	utility_sections_.reserve(2);
+void CommandManager::init_modes_() {
+  section movement("Movement");
+  movement.commands.emplace_back(CommandType::Move, "Moves cursor to coords", "-m", "--move");
+  movement.commands.emplace_back(CommandType::MoveDelta,
+                                 "Moves cursor to current coords + coords", "-md", "--move-delta");
+  add_section(movement);
 
-	section movement("Movement");
-	movement.commands.emplace_back(command_type::Move, "Moves cursor to coords", "-m", "--move");
-	movement.commands.emplace_back(command_type::MoveDelta, "Moves cursor to current coords + coords", "-md", "--move-delta");
-	add_section(movement);
+  std::stringstream click_help;
+  click_help << "\tOptional arguments : \n"
+             << "\t[button] =\n\t  -l\\--left: left click\n\t  -r\\--right: right click\n\t  -m\\--middle: middle click \n"
+             << "\t[click_time] = click time in milliseconds";
 
-	section click("Click");
-	click.commands.emplace_back(command_type::MouseClick, "Mouse click", "-mc", "--mouse-click", 
-		"\tOptional arguments : \n"s +
-		"\t[button] =\n\t  -l\\--left: left click\n\t  -r\\--right: right click\n\t  -m\\--middle: middle click \n"s +
-		"\t[click_time] = click time in milliseconds"s);
-	add_section(click);
+  section click("Click");
+  click.commands.emplace_back(CommandType::MouseClick, "Mouse click", "-mc", "--mouse-click", click_help.str());
+  add_section(click);
 
-	section network("Network");
-	network.commands.emplace_back(command_type::Network, "Opens connection at ip, port and gets movement modes from there", "-n", "--network");
-	network.commands.emplace_back(command_type::SecureNetwork, "Network mode with ssl/tls, look to wiki for setting up authentication", "-sn", "--secure-network");
-	add_utility_section(network);
-	
-	section other("Other");
-	other.commands.emplace_back(command_type::MultipleInput, "Allows multiple commands from stdin, seperated with newlines.", "-mi", "--multi-input");
-	add_utility_section(other);
+  section network("Network");
+  network.commands.emplace_back(CommandType::Network,
+                                "Opens Connection at ip, port and gets movement modes from there",
+                                "-n",
+                                "--network");
+  network.commands.emplace_back(CommandType::SecureNetwork,
+                                "Network mode with ssl/tls, look to wiki for setting up authentication",
+                                "-sn",
+                                "--secure-network");
+  add_utility_section(network);
+
+  section other("Other");
+  other.commands.emplace_back(CommandType::MultipleInput,
+                              "Allows multiple commands from stdin, seperated with newlines.",
+                              "-mi",
+                              "--multi-input");
+  other.commands.emplace_back(CommandType::Help,
+                              "Shows this help message.",
+                              "-h",
+                              "--help");
+  other.commands.emplace_back(CommandType::Version,
+                              "Shows version info.",
+                              "-v",
+                              "--version");
+  add_utility_section(other);
 }
 
-std::string command_manager::generate_help_message_() const
-{
-	std::stringstream ss;
-	ss << "Remote Control Utility\n\n";
-	ss << "Usage: " << program_name_ << " movement-mode x-pos y-pos\n";
-	ss << "Usage: " << program_name_ << " click-mode [button] [click_time]\n";
-	ss << "Usage: " << program_name_ << " network-mode port\n";
-	ss << "Usage: " << program_name_ << " other-mode\n";
-	ss << "=====================\n";
-	insert_help_for_section_type(ss, sections_);
-	insert_help_for_section_type(ss, utility_sections_);
-	return ss.str();
+std::string CommandManager::generate_help_message_() const {
+  std::stringstream ss;
+  ss << "Remote Control Utility\n\n"
+     << "Usage: " << program_name_ << " movement-mode x-pos y-pos\n"
+     << "Usage: " << program_name_ << " click-mode [button] [click_time]\n"
+     << "Usage: " << program_name_ << " network-mode port\n"
+     << "Usage: " << program_name_ << " other-mode\n"
+     << "=====================\n";
+  insert_help_for_section_type(ss, sections_);
+  insert_help_for_section_type(ss, utility_sections_);
+  return ss.str();
 }
 
-void command_manager::insert_help_for_section_type(std::stringstream& ss, const std::vector<section>& section_holder_)
-{
-	for (auto const& section : section_holder_)
-	{
-		ss << section.name << " Modes: \n";
-		for (auto const& command : section.commands)
-		{
-			ss << "  " << command.short_arg << " ," << command.long_arg << ":\n";
-			ss << "\t" << command.info << "\n";
-			if(command.extra_description.has_value())
-			{
-				ss << command.extra_description.value() << "\n";
-			}
-		}
-	}
+void CommandManager::insert_help_for_section_type(std::stringstream &ss, const std::vector<section> &section_holder_) {
+  for (auto const &section : section_holder_) {
+    ss << section.name << " Modes: \n";
+    for (auto const &command : section.commands) {
+      ss << "  " << command.short_arg << " ," << command.long_arg << ":\n";
+      ss << "\t" << command.info << "\n";
+      if (command.extra_description.has_value()) {
+        ss << command.extra_description.value() << "\n";
+      }
+    }
+  }
 }
 
-command_manager::command_detail::command_detail(command_type type, const std::string& info, const std::string& short_arg, const std::string& long_arg)
-  : type(type),
-	info(info),
-	short_arg(short_arg),
-	long_arg(long_arg),
-	extra_description()
-{
+CommandManager::command_detail::command_detail(CommandType type,
+                                               std::string info,
+                                               std::string short_arg,
+                                               std::string long_arg)
+    : type(type),
+      info(std::move(info)),
+      short_arg(std::move(short_arg)),
+      long_arg(std::move(long_arg)),
+      extra_description() {
 }
 
-command_manager::command_detail::command_detail(command_type type, const std::string& info, const std::string& short_arg, const std::string& long_arg, const std::string& extra_description)
-	: command_detail(type, info, short_arg, long_arg)
-{
-	this->extra_description = extra_description;
+CommandManager::command_detail::command_detail(CommandType type,
+                                               std::string info,
+                                               std::string short_arg,
+                                               std::string long_arg,
+                                               std::string extra_description)
+    : command_detail(type, std::move(info), std::move(short_arg), std::move(long_arg)) {
+  this->extra_description = std::move(extra_description);
 }
 
-command_manager::section::section(const std::string& name)
-  : name(name)
-{
+CommandManager::section::section(std::string name)
+    : name(std::move(name)) {
 }
 
-command_manager::command_manager()
-	: command_manager("RemoteControl")
-{
+CommandManager::CommandManager()
+    : program_name_("RemoteControl")
+    , utility_modes_enabled_(true) {
+  init_modes_();
+  help_message_ = generate_help_message_();
 }
 
-command_manager::command_manager(const std::string& program_name)
-  : program_name_(program_name)
-{
-	init_modes_();
-	help_message_ = generate_help_message_();
+void CommandManager::run_from_mode(const std::string &mode, const std::vector<std::string> &arguments) const {
+  auto command_type = get_mode(mode);
+  auto command = make_command(command_type, arguments);
+  command->execute();
 }
 
-void command_manager::run_from_mode(const std::string& mode, const std::vector<std::string>& arguments) const
-{
-	auto command_type = get_mode(mode);
-	auto command = make_command(command_type, arguments);
-	command->execute();
+CommandType CommandManager::get_mode(std::string mode_arg) const {
+  auto it = modes_.find(mode_arg);
+  if (it!=modes_.end()) {
+    return it->second;
+  }
+  if (utility_modes_enabled()) {
+    auto it_u = utility_modes_.find(mode_arg);
+    if (it_u!=utility_modes_.end()) {
+      return it_u->second;
+    }
+  }
+  throw std::runtime_error("Unknown mode!");
 }
 
-command_type command_manager::get_mode(std::string mode_arg) const
-{
-	auto it = modes_.find(mode_arg);
-	if (it != modes_.end())
-	{
-		return it->second;
-	}
-	if (utility_modes_enabled())
-	{
-		auto it_u = utility_modes_.find(mode_arg);
-		if (it_u != utility_modes_.end())
-		{
-			return it_u->second;
-		}
-	}
-	throw std::runtime_error("Unknown mode!");
+const std::string &CommandManager::help_message() const {
+  return help_message_;
 }
 
-
-const std::string& command_manager::help_message() const
-{
-	return help_message_;
+void CommandManager::add_section(const section &section_) {
+  add_section_to(section_, sections_, modes_);
 }
 
-void command_manager::add_section(const section& section_)
-{
-	add_section_to(section_, sections_, modes_);
+void CommandManager::add_utility_section(const section &section_) {
+  add_section_to(section_, utility_sections_, utility_modes_);
 }
 
-void command_manager::add_utility_section(const section& section_)
-{
-	add_section_to(section_, utility_sections_, utility_modes_);
-}
-
-void command_manager::add_section_to(const section& section_, std::vector<section>& section_holder_, std::map<std::string, command_type>& mode_holder_)
-{
-	section_holder_.push_back(section_);
-	for (auto const& command : section_.commands)
-	{
-		mode_holder_.emplace(command.short_arg, command.type);
-		mode_holder_.emplace(command.long_arg, command.type);
-	}
+void CommandManager::add_section_to(const section &section_,
+                                    std::vector<section> &section_holder_,
+                                    std::map<std::string, CommandType> &mode_holder_) {
+  section_holder_.push_back(section_);
+  for (auto const &command : section_.commands) {
+    mode_holder_.emplace(command.short_arg, command.type);
+    mode_holder_.emplace(command.long_arg, command.type);
+  }
 }
 

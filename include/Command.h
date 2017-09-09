@@ -1,96 +1,105 @@
-/*
-* File: Command.h
-* Copyright: 2017 Caner Korkmaz (info@canerkorkmaz.com)
-* Description:
-*/
+// Command.h
+// Created by Caner Korkmaz on 9/9/2017.
+// Copyright 2017 Caner Korkmaz
+//
 
 #pragma once
+
 #include <vector>
 #include <memory>
-
-#include "MouseControl.h"
 #include <optional>
+#include "MouseControl.h"
 
-enum class command_type
-{
-	Move,
-	MoveDelta,
-	MouseClick,
-	Network,
-	SecureNetwork,
-	MultipleInput,
-	Unknown
+enum class CommandType {
+  Move,
+  MoveDelta,
+  MouseClick,
+  Network,
+  SecureNetwork,
+  MultipleInput,
+  Help,
+  Version,
+  Unknown
 };
 
-class command_base
-{
-protected:
-	std::vector<std::string> arguments_;
+class CommandBase {
+ protected:
+  std::vector<std::string> arguments_;
 
-public:
-	explicit command_base(const std::vector<std::string>& arguments);
-	virtual ~command_base() = default;
+ public:
+  explicit CommandBase(const std::vector<std::string> &arguments);
+  virtual ~CommandBase() = default;
 
-	virtual void execute() const = 0;
-	void operator()() const { execute(); }
+  virtual void execute() const = 0;
+  void operator()() const { execute(); }
 };
 
-class move_command : public command_base
-{
-protected:
-	mouse_control::point_type point_;
-public:
-	explicit move_command(const std::vector<std::string>& arguments);
+class MoveCommand : public CommandBase {
+ protected:
+  mouse_control::point_type point_;
+ public:
+  explicit MoveCommand(const std::vector<std::string> &arguments);
 
-	void execute() const override;
+  void execute() const override;
 };
 
-class move_delta_command : public move_command
-{
-public:
-	explicit move_delta_command(const std::vector<std::string>& arguments);
+class MoveDeltaCommand : public MoveCommand {
+ public:
+  explicit MoveDeltaCommand(const std::vector<std::string> &arguments);
 
-	void execute() const override;
+  void execute() const override;
 };
 
-class mouse_click_command : public command_base
-{
-private:
-	mouse_control::click_type type;
+class MouseClickCommand : public CommandBase {
+ private:
+  mouse_control::click_type type;
 
-	unsigned long click_time_ms;
+  unsigned long click_time_ms;
 
-	static std::optional<mouse_control::click_type> try_parse_type(const std::string& arg);
-	static std::optional<unsigned long> try_parse_time(const std::string& arg);
-public:
-	explicit mouse_click_command(const std::vector<std::string>& arguments);
+  static std::optional<mouse_control::click_type> try_parse_type(const std::string &arg);
+  static std::optional<unsigned long> try_parse_time(const std::string &arg);
+ public:
+  explicit MouseClickCommand(const std::vector<std::string> &arguments);
 
-	void execute() const override;
+  void execute() const override;
 };
 
-class network_command : public command_base
-{
-private:
-	unsigned short port_;
-public:
-	explicit network_command(const std::vector<std::string>& arguments);
+class NetworkCommand : public CommandBase {
+ private:
+  unsigned short port_;
+ public:
+  explicit NetworkCommand(const std::vector<std::string> &arguments);
 
-	void execute() const override;
+  void execute() const override;
 };
 
-class multiple_input_command : public command_base
-{
-public:
-	explicit multiple_input_command(const std::vector<std::string>& arguments);
+class MultipleInputCommand : public CommandBase {
+ public:
+  explicit MultipleInputCommand(const std::vector<std::string> &arguments);
 
-	void execute() const override;
+  void execute() const override;
 };
 
-template<typename T> /* where T extends command_base */
-std::enable_if_t<std::is_base_of<command_base, T>::value,
-	std::unique_ptr<command_base>> make_command(const std::vector<std::string>& arguments)
-{
-	return std::make_unique<T>(arguments);
+class HelpCommand : public CommandBase {
+ public:
+  explicit HelpCommand(const std::vector<std::string> &arguments);
+
+  void execute() const override;
+};
+
+
+class VersionCommand : public CommandBase {
+ public:
+  explicit VersionCommand(const std::vector<std::string> &arguments);
+
+  void execute() const override;
+};
+
+template<typename T>
+/* where T extends CommandBase */
+std::enable_if_t<std::is_base_of<CommandBase, T>::value,
+                 std::unique_ptr<CommandBase>> make_command(const std::vector<std::string> &arguments) {
+  return std::make_unique<T>(arguments);
 }
 
-std::unique_ptr<command_base> make_command(command_type type, const std::vector<std::string>& arguments);
+std::unique_ptr<CommandBase> make_command(CommandType type, const std::vector<std::string> &arguments);

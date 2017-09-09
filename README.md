@@ -1,6 +1,6 @@
 # Remote Control
 
-A multi-purpose console mouse and keyboard automation program :
+A multi-purpose console mouse and keyboard automation Program :
 
  - Through single/multiple commands
  - Through files

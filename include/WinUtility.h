@@ -1,8 +1,7 @@
-/*
-* File: WinUtility.h
-* Copyright: 2017 Caner Korkmaz (info@canerkorkmaz.com)
-* Description:
-*/
+// WinUtility.h
+// Created by Caner Korkmaz on 9/9/2017.
+// Copyright 2017 Caner Korkmaz
+//
 
 #pragma once
 
