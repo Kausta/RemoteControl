@@ -13,6 +13,11 @@ addons:
       - g++-7
       - cmake
 
+env:
+  global:
+    - BOOST_INCLUDEDIR=$HOME/miniconda/include
+    - BOOST_LIBRARYDIR=$HOME/miniconda/lib
+
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
