@@ -8,6 +8,10 @@ environment:
   BOOST_LIBRARYDIR: C:\Libraries\boost_1_64_0\lib64-msvc-14.1
 build_script:
 - cmd: >-
+    dir %BOOST_ROOT%
+
+    dir %BOOST_LIBRARYDIR%
+
     if not exist build
     mkdir build
 
