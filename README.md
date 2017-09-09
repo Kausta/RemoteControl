@@ -1,4 +1,4 @@
-# Remote Control
+# Remote Control [![Build Status](https://travis-ci.org/Kausta/RemoteControl.svg?branch=master)](https://travis-ci.org/Kausta/RemoteControl) [![Build status](https://ci.appveyor.com/api/projects/status/dorrmqoeq3b3s0i5/branch/master?svg=true)](https://ci.appveyor.com/project/Kausta/remotecontrol/branch/master)
 
 A multi-purpose console mouse and keyboard automation Program :
 
@@ -13,7 +13,7 @@ Designed as a layer between other remote control applications with gui or automa
  - [ ] Single Command
    - [ ] Mouse
      - [x] Movement
-     - [ ] Click
+     - [x] Click
      - [ ] Drag & Drop
    - [ ] Keyboard
  - [x] Multi Command 
