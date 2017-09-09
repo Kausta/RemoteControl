@@ -5,6 +5,7 @@
 */
 
 #include <iostream>
+#include <cmath>
 
 #include "IncludeCore.h"
 #include "WinUtility.h"

@@ -51,4 +51,4 @@ namespace mouse_control
 		Middle
 	};
 	void click(click_type click, DWORD click_time_ms = 100ul);
-};
+}

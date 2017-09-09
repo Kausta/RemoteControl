@@ -10,12 +10,6 @@
 
 #include "Program.h"
 
-int main(int argc, char* argv[])
-{
-	program::instance().init_args(argc, argv);
-	return program::instance().run();
-}
-
 program& program::instance()
 {
 	static program instance_;
