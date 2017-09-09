@@ -1,5 +1,0 @@
-# Boost lib is required for CI in Team Services
-# So don't ignore lib files from it
-
-!*.lib
-!*
