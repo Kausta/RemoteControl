@@ -1,0 +1,49 @@
+dist: trusty
+language: cpp
+
+cache:
+    apt: true
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - sourceline: 'ppa:ppsspp/cmake'
+    packages:
+      - g++-7
+      - cmake
+
+env:
+  global:
+    - BOOST_INCLUDEDIR=$HOME/miniconda/include
+    - BOOST_LIBRARYDIR=$HOME/miniconda/lib
+
+install:
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda config --add channels conda-forge 
+  - conda info -a
+  - conda install boost-cpp
+
+script:
+  - mkdir -p debug-build && cd debug-build
+  - CXX=/usr/bin/g++-7 CC=/usr/bin/gcc-7 cmake -DCMAKE_BUILD_TYPE=Debug ..
+  - cd ..
+  - cmake --build ./debug-build -- -j 2
+  - cd debug-build
+  - CXX=/usr/bin/g++-7 CC=/usr/bin/gcc-7 ctest -j 2
+  - cd ..
+  - mkdir -p release-build && cd release-build
+  - CXX=/usr/bin/g++-7 CC=/usr/bin/gcc-7 cmake -DCMAKE_BUILD_TYPE=Release ..
+  - cd ..
+  - cmake --build ./release-build -- -j 2
