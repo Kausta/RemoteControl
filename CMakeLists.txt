@@ -40,6 +40,13 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS system program_options)
 
+add_library(Boost_Lib INTERFACE)
+target_include_directories(Boost_Lib SYSTEM INTERFACE ${Boost_INCLUDE_DIRS}) 
+target_link_libraries(Boost_Lib INTERFACE ${Boost_LIBRARIES})
+if (MSVC)
+    target_compile_definitions(Boost_Lib INTERFACE -DBOOST_ALL_NO_LIB)
+endif()
+
 # Set Catch
 set(CATCH_INCLUDE_DIR ${EXT_SOURCE_DIR}/catch/)
 add_library(Catch INTERFACE)
@@ -54,9 +61,7 @@ add_library(${MY_LIB_NAME} ${SOURCE_FILES})
 
 target_include_directories(${MY_LIB_NAME} PRIVATE include)
 target_link_libraries(${MY_LIB_NAME} PRIVATE ${WARNINGS_PRJ} ${ARGS_PRJ})
-
-target_include_directories(${MY_LIB_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(${MY_LIB_NAME} PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(${MY_LIB_NAME} PUBLIC Boost_Lib)
 if(WIN32)
     target_link_libraries(${MY_LIB_NAME} PUBLIC wsock32 ws2_32)
 endif()
